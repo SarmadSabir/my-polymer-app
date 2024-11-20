@@ -1,0 +1,228 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<dom-module id="my-view7">
+    <template>
+        <style>
+            :host {
+                display: block;
+                padding: 16px;
+                background-color: lightgrey;
+            }
+            .card {
+                padding: 20px;
+                background-color: #f5f5f5;
+                border-radius: 15px;
+                margin: 20px 10px;
+                box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.3);
+                animation: fadeIn 1s ease-in-out;
+            }
+            .card:hover {
+                padding: 20px;
+                background-color: #f5f5f5;
+                border-radius: 15px;
+                margin: 20px 10px;
+                box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.3);
+                transform: translateY(-5px);
+            }
+            .button-section-title {
+                font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                display: flex;
+                gap: 20px;
+                place-items: center;
+                place-content: left;
+            }
+            button {
+                font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                border-radius: 15px;
+                height: 30px;
+                padding: 0px 15px;
+                background-color: lightgrey;
+                color: black;
+            }
+            button:hover {
+                font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                border-radius: 15px;
+                height: 30px;
+                padding: 0px 15px;
+                background-color: rgb(181, 179, 179);
+                color: black;
+            }
+            button:active {
+                font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                border-radius: 15px;
+                height: 30px;
+                padding: 0px 15px;
+                background-color: rgb(0, 0, 0);
+                color: white;
+            }
+            .radio-button-section-title {
+                font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                display: flex;
+                gap: 20px;
+                place-content: left;
+                place-items: center;
+                font-weight: 600;
+            }
+            select, input[type="radio"] {
+                margin-top: 4px;
+            }
+            .drop-down-section-title {
+                font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                display: flex;
+                gap: 20px;
+                place-content: left;
+                place-items: center;
+            }
+            .output-section {
+                font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+                display: flex;
+                gap: 20px;
+                place-content: left;
+                place-items: center;
+            }
+            select {
+                padding: 5px;
+                border-radius: 10px;
+                background-color: lightgrey;
+                font-weight: 600;
+            }
+            select:hover {
+                outline: none;
+                background-color: rgb(177, 177, 177);
+                font-weight: 600;
+            }
+            @keyframes fadeIn {
+                0% { opacity: 0; transform: translateY(10px); }
+                100% { opacity: 1; transform: translateY(0); }
+            }
+        </style>
+
+        <!-- simple button  -->
+        <div class="card">
+            <div class="button-section-title">
+                <h3>1. Simple Button: </h3>
+                <button on-click="handleButtonClick">Click Me!</button>
+            </div>
+            <div class="output-section">
+                <h3>Output: </h3>
+                <div id="output">{{outputMessage}}</div>
+            </div>
+        </div>
+
+        <!-- radio button  -->
+        <div class="card">
+            <div class="radio-button-section-title">
+                <h3>2. Radio Button: </h3>
+                <div class="radio">
+                    <label><input type="radio" name="choice" value="Option 1" on-change="handleRadioChange">Option 1</label>
+                    <labe2><input type="radio" name="choice" value="Option 2" on-change="handleRadioChange">Option 2</labe2>
+                    <labe3><input type="radio" name="choice" value="Option 3" on-change="handleRadioChange">Option 3</labe3>
+                </div>
+            </div>
+            <div class="output-section">
+                <h3>Output: </h3>
+                <div id="output">{{outputMessage2}}</div>
+            </div>
+        </div>
+
+        <!-- dropdown input  -->
+        <div class="card">
+            <div class="drop-down-section-title">
+                <h3>3. Drop Down: </h3>
+                <select on-change="handleDropDownChange">
+                    <option value="" disabled selected>Choose an option</option>
+                    <option value="Option A">Option A</option>
+                    <option value="Option B">Option B</option>
+                    <option value="Option C">Option C</option>
+                </select>
+            </div> 
+            <div class="output-section">
+                <h3>Output: </h3>
+                <div id="output">{{outputMessage3}}</div>
+            </div>
+        </div>
+    </template>
+    <script>
+        // defining a new Polymer component
+        Polymer({
+            is: 'my-view7',
+            // eslint-disable-next-line max-len
+            // properties that should be initialized by default when creating a new instance of this component
+            properties: {
+                outputMessage: {
+                    type: String,
+                    value: 'Interact with the elements above to see the output here!',
+                },
+                outputMessage2: {
+                    type: String,
+                    value: 'Select a radio button to see the output here!',
+                },
+                outputMessage3: {
+                    type: String,
+                    value: 'Select an option from the dropdown to see the output here!',
+                },
+            },
+
+            // methods that are automatically invoked by Polymer
+            handleButtonClick: function() {
+                this.outputMessage = 'Button clicked!';
+                this.launchConfetti();
+            },
+
+            handleRadioChange: function(event) {
+                event.preventDefault();
+                const selectedValue = event.target.value;
+                this.outputMessage2 = 'Selected Radio is: ' + selectedValue;
+            },
+
+            handleDropDownChange: function(event) {
+                const selectedValue = event.target.value;
+                this.outputMessage3 = 'Dropdown is: ' + selectedValue;
+            },
+
+            launchConfetti: function() {
+                if (typeof confetti === 'function') {
+                    // Confetti effect setup
+                    const confettiCount = 100;
+                    const defaults = {
+                        origin: {y: 0.7},
+                    };
+
+                    // eslint-disable-next-line no-inner-declarations
+                    function fire(particleRatio, opts) {
+                        // eslint-disable-next-line no-undef
+                        confetti(Object.assign({}, defaults, opts, {
+                            particleCount: Math.floor(confettiCount * particleRatio),
+                        }));
+                    }
+
+                    fire(0.25, {
+                        spread: 26,
+                        startVelocity: 55,
+                    });
+                    fire(0.2, {
+                        spread: 60,
+                    });
+                    fire(0.35, {
+                        spread: 100,
+                        decay: 0.91,
+                    });
+                    fire(0.1, {
+                        spread: 120,
+                        startVelocity: 25,
+                        decay: 0.92,
+                    });
+                    fire(0.1, {
+                        spread: 120,
+                        startVelocity: 45,
+                    });
+                } else {
+                    // eslint-disable-next-line no-console, max-len
+                    console.warn('ERROR: Confetti library not loaded!!!');
+                }
+            },
+
+        });
+    </script>
+</dom-module>

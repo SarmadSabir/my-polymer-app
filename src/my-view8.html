@@ -1,0 +1,52 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="my-view8">
+    <template>
+        <style include="shared-styles"></style>
+
+        <div class="card">
+            <h3>Array Loop / Rendering</h3>
+
+            <dom-if if="{{hasItems}}">
+                <template>
+                    <h4>Items in the Array:</h4>
+                    <ul>
+                        <template is="dom-repeat" items="{{items}}">
+                            <li>{{item}}</li>
+                        </template>
+                    </ul>
+                </template>
+            </dom-if>
+
+            <dom-if if="{{!hasItems}}">
+                <template>
+                    <h4>No items available!</h4>
+                </template>
+            </dom-if>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'my-view8',
+
+            properties: {
+                items: {
+                    type: Array,
+                    value: function() {
+                        return ['Sarmad', 'Sam', 'Mad'];
+                    }
+                },
+                hasItems: {
+                    type: Boolean,
+                    computed: '_computeHasItems(items)',
+                },
+            },
+
+            _computeHasItems: function(items) {
+                return items && items.length > 0;
+            }
+        })
+    </script>
+</dom-module>
