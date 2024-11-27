@@ -1,0 +1,210 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="my-view12">
+  <template>
+    <style>
+      .main-components {
+        background-color: #ffffff;
+        padding: 20px;
+        max-width: 400px;
+        margin: 20px auto;
+        text-align: center;
+        font-family: 'Trebuchet MS', Arial, sans-serif;
+        border-radius: 12px;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        background: linear-gradient(145deg, #e0f7fa, #ffffff);
+      }
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 15px;
+      }
+      .recorderButton {
+        border-radius: 8px;
+        width: 90px;
+        padding: 10px;
+        font-family: 'Franklin Gothic Medium', Arial, sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+        color: #ffffff;
+        cursor: pointer;
+        border: none;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+      }
+      .recorderButtonStart {
+        background-color: #28a745;
+      }
+      .recorderButtonStop {
+        background-color: #fd7e14;
+      }
+      .recorderButtonTrash {
+        background-color: #dc3545;
+      }
+      .recorderButtonSave {
+        background-color: #17a2b8;
+      }
+      .visualization {
+        margin-top: 20px;
+        height: 60px;
+        background: linear-gradient(145deg, #e3e3e3, #f9f9f9);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+      }
+      .bar {
+        width: 5px;
+        height: 50%;
+        background-color: #007bff;
+        margin: 0 2px;
+        animation: bounce 1s infinite ease-in-out;
+      }
+      @keyframes bounce {
+        0%, 100% {
+          height: 20%;
+        }
+        50% {
+          height: 80%;
+        }
+      }
+      .timer {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        margin-top: 10px;
+      }
+      audio {
+        margin-top: 20px;
+        width: 100%;
+      }
+    </style>
+
+    <div class="main-components">
+      <h2>Audio Recorder</h2>
+      <div class="controls">
+        <button class="recorderButton recorderButtonStart" on-tap="_startRecording">Start</button>
+        <button class="recorderButton recorderButtonStop" on-tap="_stopRecording" disabled$="[[!isRecording]]">Stop</button>
+        <button class="recorderButton recorderButtonTrash" on-tap="_discardRecording" disabled$="[[!recordedBlob]]">Trash</button>
+        <button class="recorderButton recorderButtonSave" on-tap="_downloadRecording" disabled$="[[!recordedBlob]]">Save</button>
+      </div>
+      <div class="visualization" hidden$="[[!isRecording]]">
+        <!-- Animation bar that will appear when recording is started... -->
+        <template is="dom-repeat" items="{{bars}}">
+          <div class="bar" hidden$="[[!isRecording]]" style="animation-delay: [[item.delay]];"></div>
+        </template>
+      </div>
+      <div class="timer" hidden$="[[!isRecording]]">[[formattedTime]]</div>
+      <!-- Area for recording... -->
+      <audio controls hidden$="[[!recordedBlob]]" src$="[[audioUrl]]"></audio>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'my-view12',
+
+      properties: {
+        isRecording: {
+          type: Boolean,
+          value: false,
+        },
+        recordedBlob: {
+          type: Object,
+          value: null,
+        },
+        audioUrl: {
+          type: String,
+          value: '',
+        },
+        bars: {
+          type: Array,
+          value: () => Array.from({length: 15}, (_, i) => ({delay: i * 0.1})),
+        },
+        timer: {
+          type: Number,
+          value: 0,
+        },
+        formattedTime: {
+          type: String,
+          computed: '_formatTime(timer)',
+        },
+      },
+
+      ready: function() {
+        this._initRecorder();
+      },
+
+      _initRecorder: function() {
+        if (navigator.mediaDevices && typeof MediaRecorder !== 'undefined') {
+          console.log('MediaRecorder is supported');
+        } else {
+          console.error('MediaRecorder is not supported in this browser');
+        }
+      },
+
+      _startRecording: function() {
+        const self = this;
+        navigator.mediaDevices.getUserMedia({audio: true})
+          .then(function(stream) {
+            self.mediaRecorder = new MediaRecorder(stream);
+            self.audioChunks = [];
+            self.mediaRecorder.ondataavailable = function(event) {
+              self.audioChunks.push(event.data);
+            };
+            self.mediaRecorder.onstop = function() {
+              const blob = new Blob(self.audioChunks, {type: 'audio/wav'});
+              self.recordedBlob = blob;
+              self.audioUrl = URL.createObjectURL(blob);
+              self.isRecording = false;
+              clearInterval(self.timerInterval);
+            };
+            self.mediaRecorder.start();
+            self.isRecording = true;
+            self._startTimer();
+          })
+          .catch(function(err) {
+            console.error('Error accessing audio stream:', err);
+          });
+      },
+
+      _stopRecording: function() {
+        if (this.mediaRecorder) {
+          this.mediaRecorder.stop();
+          window.alert('Recording has ended successfully!');
+        }
+      },
+
+      _discardRecording: function() {
+        this.recordedBlob = null;
+        this.audioUrl = '';
+        window.alert('Recording has been deleted successfully!');
+      },
+
+      _downloadRecording: function() {
+        if (this.recordedBlob) {
+          const a = document.createElement('a');
+          a.href = this.audioUrl;
+          a.download = 'my-audio-file.wav';
+          a.click();
+        }
+      },
+
+      _startTimer: function() {
+        this.timer = 0;
+        const self = this;
+        this.timerInterval = setInterval(function() {
+          self.timer += 1;
+        }, 1000);
+      },
+
+      _formatTime: function(timer) {
+        const minutes = Math.floor(timer / 60);
+        const seconds = timer % 60;
+        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+      },
+    });
+  </script>
+</dom-module>

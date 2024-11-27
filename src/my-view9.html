@@ -1,0 +1,86 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="shared-styles.html">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+<dom-module id="my-view9">
+    <template>
+        <style include="shared-styles">
+            .student-card {
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                background-color: white;
+            }
+            .student-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3);
+            }
+            .student-age {
+                font-size: 0.9rem;
+                padding: 5px 10px;
+                background-color: lightcoral;
+                color: white;
+                border-radius: 15px;
+            }
+        </style>
+
+        <div class="card container mt-5">
+            <div class="text-center mb-4">
+                <h1>Students</h1>
+            </div>
+
+            <div class="row">
+                <template 
+                    is="dom-repeat" 
+                    items="{{students}}" 
+                    as="student" 
+                    index-as="index">
+                    <dom-if if="{{_showStudent(student.age)}}">
+                        <template>
+                            <div 
+                                id="student-{{index}}" 
+                                class="col-md-4 col-sm-6 mb-4">
+                                <div class="card student-card">
+                                    <div class="card-body text-center">
+                                        <h4 class="card-title">{{student.name}}</h4>
+                                        <span class="student-age">Age: {{student.age}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </dom-if>
+                </template>
+            </div>
+
+            <dom-if if="{{!students.length}}">
+                <template>
+                    <div class="text-center mt-4">
+                        <h4>No students available!</h4>
+                    </div>
+                </template>
+            </dom-if>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            is: 'my-view9',
+
+            properties: {
+                students: {
+                    type: Array,
+                    value: function() {
+                        return [
+                            {name: 'John', age: 18},
+                            {name: 'Sarmad', age: 25},
+                            {name: 'Smith', age: 19},
+                            {name: 'Jeff', age: 25},
+                            {name: 'Micheal', age: 17},
+                        ];
+                    },
+                },
+            },
+
+            _showStudent: function(age) {
+                return age >= 17;
+            },
+        });
+    </script>
+</dom-module>

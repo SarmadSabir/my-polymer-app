@@ -8,7 +8,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
 <link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
 <link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
@@ -30,6 +30,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="lazy-import" href="my-view6.html">
 <link rel="lazy-import" href="my-view7.html">
 <link rel="lazy-import" href="my-view8.html">
+<link rel="lazy-import" href="my-view9.html">
+<link rel="lazy-import" href="my-view10.html">
+<link rel="lazy-import" href="my-view11.html">
+<link rel="lazy-import" href="my-view12.html">
+<!-- <link rel="lazy-import" href="audio-recorder.html"> -->
 <link rel="lazy-import" href="my-view404.html">
 
 <dom-module id="my-app">
@@ -82,6 +87,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       .nav-bar a {
         text-decoration: none;
+        font-size: 14px;
         color: white;
         padding: 0 16px;
         font-weight: bold;
@@ -98,9 +104,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         width: 24px;
         height: 24px;
         margin-right: 8px;
-        color: #4285f4; /* Matches Google's brand color */
-      } 
+        color: #4285f4;
+      }
     </style>
+
+    <script src="../node_modules/recorder-js/lib/index.js"></script>
 
     <app-location
         route="{{route}}"
@@ -119,14 +127,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
         <app-toolbar>Menu</app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+          <a name="view10" href="[[rootPath]]view10">Latest News</a>
           <a name="view1" href="[[rootPath]]view1">View One</a>
           <a name="view2" href="[[rootPath]]view2">View Two</a>
           <a name="view3" href="[[rootPath]]view3">View Three</a>
-          <a name="view4" href="[[rootPath]]view4">View Four</a>
+          <a name="view4" href="[[rootPath]]view4">Aesthetic</a>
           <!-- <a name="view5" href="[[rootPath]]view5">11/19/2024</a> -->
-          <a name="view6" href="[[rootPath]]view6">Parent -> Child</a>
+          <a name="view6" href="[[rootPath]]view6">Relationship</a>
           <a name="view7" href="[[rootPath]]view7">Elements</a>
-          <a name="view8" href="[[rootPath]]view8">For-If Cond</a>
+          <a name="view8" href="[[rootPath]]view8">Condition 1</a>
+          <a name="view9" href="[[rootPath]]view9">Condition 2</a>
+          <a name="view11" href="[[rootPath]]view11">Post</a>
+          <a name="view12" href="[[rootPath]]view12">AudiO</a>
+          <!-- <a name="audio-recorder" href="[[rootPath]]audio-recorder">Audio Recorder</a> -->
         </iron-selector>
       </app-drawer>
 
@@ -137,20 +150,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <app-toolbar>
             <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
             <div main-title>My App</div>
-          </app-toolbar>
-        </app-header>
-
-        <div class="nav-bar">
-          <iron-selector 
-            selected="[[page]]" 
-            attr-for-selected="name" 
-            role="navigation">
-            <a name="view6" href="[[rootPath]]view6">P/C</a>
-            <a name="view7" href="[[rootPath]]view7">Elements</a>
-            <a name="view8" href="[[rootPath]]view8">Cond</a>
-            <a style="color: rgb(255, 68, 0);" href="https://www.google.com" target="_blank" rel="noopener noreferrer">Google</a>
-          </iron-selector>
-        </div>        
+            <div class="nav-bar">
+              <iron-selector 
+                selected="[[page]]" 
+                attr-for-selected="name" 
+                role="navigation">
+                <a name="view6" href="view10">News</a>
+                <a name="view7" href="view7">Elements</a>
+                <a name="audio-recorder" href="audio-recorder">Audio Recorder</a>
+                <a name="view11" href="view11">Post</a>
+                <a style="color: rgb(255, 68, 0);" href="https://www.google.com" target="_blank" rel="noopener noreferrer">Google</a>
+              </iron-selector>
+            </div>
+          </app-toolbar>   
+        </app-header>     
 
         <iron-pages
             selected="[[page]]"
@@ -165,6 +178,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <my-view6 name="view6"></my-view6>
           <my-view7 name="view7"></my-view7>
           <my-view8 name="view8"></my-view8>
+          <my-view9 name="view9"></my-view9>
+          <my-view10 name="view10"></my-view10>
+          <my-view11 name="view11"></my-view11>
+          <my-view12 name="view12"></my-view12>
+          <!-- <audio-recorder name="audio-recorder"></audio-recorder> -->
           <my-view404 name="view404"></my-view404>
         </iron-pages>
       </app-header-layout>
@@ -172,60 +190,51 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
 
   <script>
-    // Gesture events like tap and track generated from touch will not be
-    // preventable, allowing for better scrolling performance.
-    Polymer.setPassiveTouchGestures(true);
+    Polymer({
+      is: 'my-app',
 
-    class MyApp extends Polymer.Element {
-      static get is() { return 'my-app'; }
+      properties: {
+        page: {
+          type: String,
+          reflectToAttribute: true,
+          observer: '_pageChanged',
+        },
+        routeData: {
+          type: Object,
+        },
+        subroute: {
+          type: Object,
+        },
+        rootPath: {
+          type: String,
+        },
+      },
 
-      static get properties() {
-        return {
-          page: {
-            type: String,
-            reflectToAttribute: true,
-            observer: '_pageChanged',
-          },
-          routeData: Object,
-          subroute: Object,
-          // This shouldn't be neccessary, but the Analyzer isn't picking up
-          // Polymer.Element#rootPath
-          rootPath: String,
-        };
-      }
+      observers: [
+        '_routePageChanged(routeData.page)',
+      ],
 
-      static get observers() {
-        return [
-          '_routePageChanged(routeData.page)',
-        ];
-      }
-
-      _routePageChanged(page) {
-        // If no page was found in the route data, page will be an empty string.
-        // Default to 'view1' in that case.
+      _routePageChanged: function(page) {
         this.page = page || 'view1';
-
-        // Close a non-persistent drawer when the page & route are changed.
+    
         if (!this.$.drawer.persistent) {
           this.$.drawer.close();
         }
-      }
+      },
 
-      _pageChanged(page) {
-        // Load page import on demand. Show 404 page if fails
-        const resolvedPageUrl = this.resolveUrl('my-' + page + '.html');
-        Polymer.importHref(
-            resolvedPageUrl,
-            null,
-            this._showPage404.bind(this),
-            true);
-      }
+      _pageChanged: function(page) {
+        var resolvedPageUrl = this.resolveUrl('my-' + page + '.html');
+        Polymer.Base.importHref(
+          resolvedPageUrl,
+          null,
+          this._showPage404.bind(this),
+          true
+        );
+      },
 
-      _showPage404() {
+      _showPage404: function() {
         this.page = 'view404';
-      }
-    }
-
-    window.customElements.define(MyApp.is, MyApp);
+      },
+    });
   </script>
 </dom-module>
