@@ -65,10 +65,10 @@
 
       @keyframes wave {
         0%, 100% {
-          transform: scaleY(0.5); /* Small bar at start and end */
+          transform: scaleY(0.5);
         }
         50% {
-          transform: scaleY(1.5); /* Tall bar in the middle */
+          transform: scaleY(1.5);
         }
       }
       .timer {
@@ -80,6 +80,26 @@
       audio {
         margin-top: 20px;
         width: 100%;
+      }
+      .playback-controls {
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+      }
+      .playback-speed {
+        font-size: 14px;
+        font-weight: bold;
+        padding: 5px 10px;
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .playback-speed.active {
+        background-color: #0056b3;
       }
     </style>
 
@@ -99,7 +119,12 @@
       </div>
       <div class="timer" hidden$="[[!isRecording]]">[[formattedTime]]</div>
       <!-- Area for recording... -->
-      <audio controls hidden$="[[!recordedBlob]]" src$="[[audioUrl]]"></audio>
+      <audio controls hidden$="[[!recordedBlob]]" src$="[[audioUrl]]" id="audioPlayer"></audio>
+      <div class="playback-controls" hidden$="[[!recordedBlob]]">
+        <button class="playback-speed" on-click="_setPlaybackSpeed" hidden$="[[!recordedBlob]]" data-speed="1">1x</button>
+        <button class="playback-speed" on-click="_setPlaybackSpeed" hidden$="[[!recordedBlob]]" data-speed="1.5">1.5x</button>
+        <button class="playback-speed" on-click="_setPlaybackSpeed" hidden$="[[!recordedBlob]]" data-speed="2">2x</button>
+      </div>
       <p hidden$="[[!recordedBlob]]">Press the <b>save</b> button to download the audio!</p>
     </div>
   </template>
@@ -119,7 +144,7 @@
           type: Object,
           value: null,
         },
-        // URL of recorded audio
+        // URL of recorded audio file
         audioUrl: {
           type: String,
           value: '',
@@ -129,80 +154,111 @@
           type: Array,
           value: () => Array.from({length: 20}, (_, i) => ({delay: i * 0.1})),
         },
-        // timer for the recording
+        // timer for the audio 
         timer: {
           type: Number,
           value: 0,
         },
-        // interval for the timer
+        // interval for the timer 
         formattedTime: {
           type: String,
           computed: '_formatTime(timer)',
         },
+        audioObject: {
+          type: Object,
+          notify: true, // Optional if you use Polymer's two-way binding
+        },
       },
 
-      // when ready => call the constructor
+      // when ready => call the constructor 
       ready: function() {
         this._initRecorder();
       },
 
-      // constructor and to check if MediaRecorder is supported or not
+      // constructor and to check if MediaRecorder is supported
       _initRecorder: function() {
-        if (navigator.mediaDevices && typeof MediaRecorder !== 'undefined') {
-          console.log('MediaRecorder is supported');
-        } else {
-          console.error('MediaRecorder is not supported in this browser');
+        if (!navigator.mediaDevices || typeof MediaRecorder === 'undefined') {
+          this._showErrorMessage('MediaRecorder is not supported in this browser.');
         }
       },
 
       // start recording when start button is clicked
       _startRecording: function() {
         const self = this;
-        // request microphone access from the browser
         navigator.mediaDevices.getUserMedia({audio: true})
         .then(function(stream) {
-            // set up to record audo
-            self.mediaRecorder = new MediaRecorder(stream);
-            // data chunks to be stored here
-            self.audioChunks = [];
-            self.mediaRecorder.ondataavailable = function(event) {
-              self.audioChunks.push(event.data);
-            };
-            // stop, create url and then mark isRecording as false
-            self.mediaRecorder.onstop = function() {
-              const blob = new Blob(self.audioChunks, {type: 'audio/wav'});
-              self.recordedBlob = blob;
-              self.audioUrl = URL.createObjectURL(blob);
-              self.isRecording = false;
-              clearInterval(self.timerInterval);
-            };
-            self.mediaRecorder.start();
-            self.isRecording = true;
-            self._startTimer();
-          })
-          // error if not recording
-          .catch(function(err) {
-            console.error('Error accessing audio stream:', err);
-          });
+          self.mediaRecorder = new MediaRecorder(stream);
+          self.audioChunks = [];
+          self.mediaRecorder.ondataavailable = function(event) {
+            self.audioChunks.push(event.data);
+          };
+          self.mediaRecorder.onstop = function() {
+            const blob = new Blob(self.audioChunks, {type: 'audio/wav'});
+            self.recordedBlob = blob;
+            self.audioUrl = URL.createObjectURL(blob);
+            self.isRecording = false;
+            clearInterval(self.timerInterval);
+          };
+          self.mediaRecorder.start();
+          self.isRecording = true;
+          self._startTimer();
+        })
+        .catch(function(err) {
+          self._showErrorMessage('Error accessing audio stream: ' + err.message);
+        });
       },
 
       // stop recording when stop button is clicked
       _stopRecording: function() {
         if (this.mediaRecorder) {
           this.mediaRecorder.stop();
-          // window.alert('Recording has ended successfully!');
+          this.mediaRecorder.onstop = () => {
+            const blob = new Blob(this.audioChunks, { type: 'audio/wav' });
+            this.recordedBlob = blob;
+            this.audioUrl = URL.createObjectURL(blob);
+            this.isRecording = false;
+            clearInterval(this.timerInterval);
+
+            // create the audioObject with relevant details
+            this.audioObject = {
+              blob: this.recordedBlob,
+              url: this.audioUrl,
+              duration: this.timer, // the duration
+              format: 'wav',
+              size: this.recordedBlob.size,
+            };
+
+            // run the custom event
+            this.dispatchEvent(new CustomEvent('audio-created', {
+              detail: { audio: this.audioObject },
+              bubbles: true,
+              composed: true,
+            }));
+          };
         }
       },
 
-      // discard recording when trash button is clicked and give alert message
+      // discard recording when trash button is clicked
       _discardRecording: function() {
         // show confirmation dialog
-        // eslint-disable-next-line max-len
         const confirmation = window.confirm('Are you sure you want to delete the recording?');
-        // proceed only if user confirms
         if (confirmation) {
           this.recordedBlob = null;
           this.audioUrl = '';
+
+          // reset playback speed to 1x
+          const audioPlayer = this.$.audioPlayer;
+          if (audioPlayer) {
+            audioPlayer.playbackRate = 1;
+          }
+
+          // remove active class from playback speed buttons
+          const buttons = this.shadowRoot.querySelectorAll('.playback-speed');
+          buttons.forEach((button) => button.classList.remove('active'));
+          if (buttons[0]) {
+            buttons[0].classList.add('active'); // Set 1x button as active
+          }
+
           window.alert('Recording has been deleted successfully!');
         }
       },
@@ -231,6 +287,37 @@
         const minutes = Math.floor(timer / 60);
         const seconds = timer % 60;
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+      },
+
+      // function for playback speed (1x, 1.5x, 2x)
+      _setPlaybackSpeed: function(event) {
+        const speed = parseFloat(event.target.getAttribute('data-speed'));
+        const audioPlayer = this.$.audioPlayer;
+
+        // update the playback rate
+        audioPlayer.playbackRate = speed;
+
+        // highlight the active button
+        const buttons = this.shadowRoot.querySelectorAll('.playback-speed');
+        buttons.forEach((button) => button.classList.remove('active'));
+        event.target.classList.add('active');
+      },
+
+      _onRecordingComplete(audio) {
+        // assume audio is the audio object created after recording
+        this.audioObject = audio;
+
+        // dispatch custom event to notify the parent
+        this.dispatchEvent(new CustomEvent('audio-created', {
+          detail: { audio },
+          bubbles: true,
+          composed: true, // shadow dom boundaries
+        }));
+      },
+      // simulate recording 
+      simulateRecordingComplete() {
+        const mockAudio = { duration: 60, format: 'mp3', size: '1MB' }; 
+        this._onRecordingComplete(mockAudio);
       },
     });
   </script>
