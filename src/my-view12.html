@@ -86,10 +86,10 @@
     <div class="main-components">
       <h2>Audio Recorder</h2>
       <div class="controls">
-        <button class="recorderButton recorderButtonStart" on-tap="_startRecording" disabled$="[[isRecording]]">Start</button>
-        <button class="recorderButton recorderButtonStop" on-tap="_stopRecording" hidden$="[[!isRecording]]">Stop</button>
-        <button class="recorderButton recorderButtonTrash" on-tap="_discardRecording" hidden$="[[!recordedBlob]]">Delete</button>
-        <button class="recorderButton recorderButtonSave" on-tap="_downloadRecording" hidden$="[[!recordedBlob]]">Save</button>
+        <button class="recorderButton recorderButtonStart" on-click="_startRecording" hidden$="[[recordedBlob]]" disabled$="[[isRecording]]">Start</button>
+        <button class="recorderButton recorderButtonStop" on-click="_stopRecording" hidden$="[[!isRecording]]">Stop</button>
+        <button class="recorderButton recorderButtonTrash" on-click="_discardRecording" hidden$="[[!recordedBlob]]">Delete</button>
+        <button class="recorderButton recorderButtonSave" on-click="_downloadRecording" hidden$="[[!recordedBlob]]">Save</button>
       </div>
       <div class="visualization" hidden$="[[!isRecording]]">
         <!-- Animation bar that will appear when recording is started... -->
@@ -159,16 +159,16 @@
       _startRecording: function() {
         const self = this;
         // request microphone access from the browser
-        navigator.mediaDevices.getUserMedia({audio: true})  
+        navigator.mediaDevices.getUserMedia({audio: true})
         .then(function(stream) {
-            // setu up to record audo
+            // set up to record audo
             self.mediaRecorder = new MediaRecorder(stream);
-            // data chunks to be stored here 
+            // data chunks to be stored here
             self.audioChunks = [];
             self.mediaRecorder.ondataavailable = function(event) {
               self.audioChunks.push(event.data);
             };
-            // stop, create url and then mark isRecording as false 
+            // stop, create url and then mark isRecording as false
             self.mediaRecorder.onstop = function() {
               const blob = new Blob(self.audioChunks, {type: 'audio/wav'});
               self.recordedBlob = blob;
@@ -180,28 +180,34 @@
             self.isRecording = true;
             self._startTimer();
           })
-          // error if not recording 
+          // error if not recording
           .catch(function(err) {
             console.error('Error accessing audio stream:', err);
           });
       },
 
-      // stop recording when stop button is clicked and give alert
+      // stop recording when stop button is clicked
       _stopRecording: function() {
         if (this.mediaRecorder) {
           this.mediaRecorder.stop();
-          window.alert('Recording has ended successfully!');
+          // window.alert('Recording has ended successfully!');
         }
       },
 
-      // discard recording when trash button is clicked and give alert
+      // discard recording when trash button is clicked and give alert message
       _discardRecording: function() {
-        this.recordedBlob = null;
-        this.audioUrl = '';
-        window.alert('Recording has been deleted successfully!');
+        // show confirmation dialog
+        // eslint-disable-next-line max-len
+        const confirmation = window.confirm('Are you sure you want to delete the recording?');
+        // proceed only if user confirms
+        if (confirmation) {
+          this.recordedBlob = null;
+          this.audioUrl = '';
+          window.alert('Recording has been deleted successfully!');
+        }
       },
 
-      // save recording when save button is clicked and give alert
+      // save recording when save button is clicked
       _downloadRecording: function() {
         if (this.recordedBlob) {
           const a = document.createElement('a');
