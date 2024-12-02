@@ -1,0 +1,128 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+<dom-module id="image-viewer">
+    <template>
+        <style>
+            :host {
+                display: block;
+                height: 100%;
+            }
+
+            .hidden {
+                display: none;
+            }
+            button {
+                border-radius: 20px;
+            }
+        </style>
+
+        <div class="container my-4">
+            <h2 class="text-center mb-4">Image Viewer</h2>
+
+            <!-- File Upload -->
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="file" accept="image/*" on-change="_handleFileUpload" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <!-- View Button -->
+            <div class="row justify-content-center mt-4" hidden$="[[!imageUrl]]">
+                <div class="col-md-6 text-center">
+                    <button class="btn btn-primary me-2" on-click="_viewImage">View</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="imageModal" tabindex="-1" hidden$="[[!showModal]]" aria-labelledby="imageModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="imageModalLabel">Image Viewer</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img id="modalImage" src="[[imageUrl]]" alt="Viewed Image" class="img-fluid rounded shadow" on-wheel="_zoomWithScroll">
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success me-2" on-click="_fullscreenImage">Full Screen</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'image-viewer',
+
+            properties: {
+                imageUrl: {
+                    type: String,
+                    value: '',
+                },
+                showModal: {
+                    type: Boolean,
+                    value: false,
+                },
+            },
+
+            _handleFileUpload: function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    console.log(reader);
+                    reader.onload = (event) => {
+                        this.imageUrl = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            },
+
+            _viewImage: function() {
+                if (this.imageUrl) {
+                    this.showModal = true; // show modal 
+                    const modalElement = new bootstrap.Modal(this.$.imageModal);
+                    modalElement.show();
+                } else {
+                    alert('No image available to view.');
+                }
+            },
+
+            _zoomWithScroll: function(event) {
+                const image = this.$.modalImage;
+                if (image) {
+                    const delta = event.deltaY;
+                    let scale = 1;
+
+                    if (delta < 0) {
+                        scale = 1.5; // zooming in
+                    } else if (delta > 0) {
+                        scale = 1; // zooming out
+                    }
+
+                    image.style.transform = `scale(${scale})`;
+                    image.style.transition = 'transform 0.2s ease';
+                }
+            },
+
+            _fullscreenImage: function() {
+                const image = this.$.modalImage;
+                if (image && image.requestFullscreen) {
+                    image.requestFullscreen();
+                } else if (image) {
+                    alert('Fullscreen mode is not supported in your browser.');
+                } else {
+                    alert('No image available for fullscreen.');
+                }
+            },
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</dom-module>

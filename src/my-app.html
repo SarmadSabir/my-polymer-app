@@ -34,6 +34,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="lazy-import" href="my-view10.html">
 <link rel="lazy-import" href="my-view11.html">
 <link rel="lazy-import" href="my-view12.html">
+<!-- <link rel="lazy-import" href="my-view13.html"> -->
+<link rel="lazy-import" href="image-viewer.html">
 <link rel="lazy-import" href="my-view404.html">
 
 <dom-module id="my-app">
@@ -138,6 +140,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <a name="view9" href="[[rootPath]]view9">Condition 2</a>
           <a name="view11" href="[[rootPath]]view11">Post</a>
           <a name="view12" href="[[rootPath]]view12">Audio Recorder</a>
+          <!-- <a name="view13" href="[[rootPath]]view13">Image</a> -->
+          <a name="image-viewer" href="[[rootPath]]image-viewer">Image Viewer</a>
         </iron-selector>
       </app-drawer>
 
@@ -157,7 +161,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <a name="view7" href="view7">Elements</a>
                 <a name="view12" href="view12">Audio Recorder</a>
                 <a name="view11" href="view11">Post</a>
-                <a style="color: rgb(255, 68, 0);" href="https://www.google.com" target="_blank" rel="noopener noreferrer">Google</a>
+                <a name="image-viewer" href="image-viewer">Image</a>
               </iron-selector>
             </div>
           </app-toolbar>   
@@ -180,6 +184,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <my-view10 name="view10"></my-view10>
           <my-view11 name="view11"></my-view11>
           <my-view12 name="view12"></my-view12>
+          <!-- <my-view13 name="view13"></my-view13> -->
+          <image-viewer name="image-viewer"></image-viewer>
           <my-view404 name="view404"></my-view404>
         </iron-pages>
       </app-header-layout>
@@ -236,7 +242,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _showPage404: function() {
         this.page = 'view404';
       },
-      
+
       _handleAudioCreated(event) {
         const audioObject = event.detail.audio;
         console.log('Audio object received from my-view12:', audioObject);
