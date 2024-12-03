@@ -7,49 +7,170 @@
             :host {
                 display: block;
                 height: 100%;
+                margin-top: 50px;
+                color: white; /* Light text */
+                font-family: Arial, sans-serif;
             }
 
-            .hidden {
-                display: none;
+            h2 {
+                color: #0a78b8;
+                font-weight: bold;
+                text-align: center;
+                margin-bottom: 20px;
             }
-            button {
+
+            .container {
+                max-width: 600px;
+                margin: auto;
+                background-color: #2f303a;
+                border: 1px solid #0a78b8;
+                border-radius: 15px;
+                padding: 20px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            }
+
+            .form-control {
+                background-color: #2f303a;
+                color: white;
+                border: 1px solid #0a78b8;
+                border-radius: 10px;
+                padding: 10px;
+                margin-bottom: 20px;
+            }
+
+            .form-control:focus {
+                border-color: #0a78b8;
+                box-shadow: 0 0 5px rgba(10, 120, 184, 0.5);
+            }
+
+            .btn {
                 border-radius: 20px;
+                padding: 10px 20px;
+                font-weight: bold;
+                transition: all 0.3s ease;
+            }
+
+            .btn-primary {
+                background-color: #0a78b8;
+                border: none;
+            }
+
+            .btn-primary:hover {
+                background-color: #084f78;
+            }
+
+            .btn-success {
+                background-color: #28a745;
+                border: none;
+            }
+
+            .btn-success:hover {
+                background-color: #1e7d34;
+            }
+
+            .modal-content {
+                background-color: #2f303a;
+                color: white;
+                border-radius: 15px;
+                border: 1px solid #0a78b8;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+            }
+
+            .modal-header,
+            .modal-footer {
+                border: none;
+            }
+
+            .modal-title {
+                color: #0a78b8;
+            }
+
+            .img-fluid {
+                max-height: 400px;
+                border: 2px solid #0a78b8;
+                border-radius: 10px;
+                transition: transform 0.3s ease;
+            }
+            input[type="file"] {
+                padding: 10px;
+                border: 1px solid #0a78b8;
+                border-radius: 10px;
+                color: white;
+                background-color: #2f303a;
+                font-size: 16px;
+                cursor: pointer;
+                outline: none;
+                transition: all 0.3s ease;
+            }
+
+            input[type="file"]::-webkit-file-upload-button {
+                background-color: #0a78b8;
+                border: none;
+                color: white;
+                padding: 8px 16px;
+                border-radius: 5px;
+                font-size: 14px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            input[type="file"]::-webkit-file-upload-button:hover {
+                background-color: #084f78;
             }
         </style>
 
-        <div class="container my-4">
-            <h2 class="text-center mb-4">Image Viewer</h2>
+        <div class="container">
+            <h2>Image Viewer</h2>
 
             <!-- File Upload -->
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <input type="file" accept="image/*" on-change="_handleFileUpload" class="form-control">
-                    </div>
-                </div>
-            </div>
+            <input
+                type="file"
+                accept="image/*"
+                on-change="_handleFileUpload"
+                class="form-control"
+                placeholder="Upload an image"
+            />
 
             <!-- View Button -->
-            <div class="row justify-content-center mt-4" hidden$="[[!imageUrl]]">
-                <div class="col-md-6 text-center">
-                    <button class="btn btn-primary me-2" on-click="_viewImage">View</button>
-                </div>
+            <div class="text-center" hidden$="[[!imageUrl]]">
+                <button class="btn btn-primary" on-click="_viewImage">View Image</button>
             </div>
         </div>
 
         <!-- Modal -->
-        <div class="modal fade" id="imageModal" tabindex="-1" hidden$="[[!showModal]]" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div
+            class="modal fade"
+            id="imageModal"
+            tabindex="-1"
+            hidden$="[[!showModal]]"
+            aria-labelledby="imageModalLabel"
+            aria-hidden="true"
+        >
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="imageModalLabel">Image Viewer</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                        ></button>
                     </div>
                     <div class="modal-body text-center">
-                        <img id="modalImage" src="[[imageUrl]]" alt="Viewed Image" class="img-fluid rounded shadow" on-wheel="_zoomWithScroll">
+                        <img
+                            id="modalImage"
+                            src="[[imageUrl]]"
+                            alt="Viewed Image"
+                            class="img-fluid"
+                            on-wheel="_zoomWithScroll"
+                        />
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-success me-2" on-click="_fullscreenImage">Full Screen</button>
+                        <button class="btn btn-success me-2" on-click="_fullscreenImage">
+                            Full Screen
+                        </button>
                     </div>
                 </div>
             </div>
@@ -75,7 +196,6 @@
                 const file = event.target.files[0];
                 if (file) {
                     const reader = new FileReader();
-                    console.log(reader);
                     reader.onload = (event) => {
                         this.imageUrl = event.target.result;
                     };
@@ -85,11 +205,10 @@
 
             _viewImage: function() {
                 if (this.imageUrl) {
-                    this.showModal = true; // show modal 
+                    this.showModal = true;
+                    // eslint-disable-next-line no-undef
                     const modalElement = new bootstrap.Modal(this.$.imageModal);
                     modalElement.show();
-                } else {
-                    alert('No image available to view.');
                 }
             },
 
@@ -97,16 +216,16 @@
                 const image = this.$.modalImage;
                 if (image) {
                     const delta = event.deltaY;
-                    let scale = 1;
+                    let currentScale = parseFloat(image.dataset.scale || 1);
 
                     if (delta < 0) {
-                        scale = 1.5; // zooming in
-                    } else if (delta > 0) {
-                        scale = 1; // zooming out
+                        currentScale = Math.min(currentScale + 0.1, 2); // Zoom in
+                    } else {
+                        currentScale = Math.max(currentScale - 0.1, 1); // Zoom out
                     }
 
-                    image.style.transform = `scale(${scale})`;
-                    image.style.transition = 'transform 0.2s ease';
+                    image.style.transform = `scale(${currentScale})`;
+                    image.dataset.scale = currentScale;
                 }
             },
 
@@ -114,10 +233,8 @@
                 const image = this.$.modalImage;
                 if (image && image.requestFullscreen) {
                     image.requestFullscreen();
-                } else if (image) {
-                    alert('Fullscreen mode is not supported in your browser.');
                 } else {
-                    alert('No image available for fullscreen.');
+                    alert('Fullscreen mode is not supported in this browser.');
                 }
             },
         });

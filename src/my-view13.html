@@ -6,17 +6,173 @@
             :host {
                 display: block;
                 height: 100%;
+                color: white; /* Light text */
+                font-family: Arial, sans-serif;
+            }
+
+            h1, h3 {
+                color: #0a78b8;
+                text-align: center;
+            }
+
+            .container {
+                margin: 20px auto;
+                padding: 20px;
+                border: 1px solid #0a78b8;
+                border-radius: 15px;
+                max-width: 600px;
+                background-color: #2f303a;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+            }
+
+            .file-input {
+                margin: 15px 0;
+                display: flex;
+                justify-content: center;
+            }
+
+            input[type="file"] {
+                padding: 10px;
+                border: 1px solid #0a78b8;
+                border-radius: 10px;
+                color: white;
+                background-color: #2f303a;
+                font-size: 16px;
+                cursor: pointer;
+                outline: none;
+                transition: all 0.3s ease;
+            }
+
+            input[type="file"]::-webkit-file-upload-button {
+                background-color: #0a78b8;
+                border: none;
+                color: white;
+                padding: 8px 16px;
+                border-radius: 5px;
+                font-size: 14px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            input[type="file"]::-webkit-file-upload-button:hover {
+                background-color: #084f78;
+            }
+
+            .media-container {
+                margin: 20px 0;
+                text-align: center;
+            }
+
+            video {
+                display: block;
+                margin: 10px auto;
+                max-width: 100%;
+                border: 2px solid #0a78b8;
+                border-radius: 10px;
+                background-color: #2f303a;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            }
+
+            video:focus,
+            audio:focus {
+                outline: none;
+                border-color: #084f78;
+                box-shadow: 0 0 10px rgba(10, 120, 184, 0.7);
             }
         </style>
 
-        <div>
-            <h1>Image Viewer</h1>
+        <div class="container">
+            <h1>One Time Player</h1>
+
+            <div class="file-input">
+                <h3>Upload Videos here: </h3>
+                <input type="file" accept="video/*" multiple on-change="_uploadVideoFiles" />
+            </div>
+
+            <div class="file-input">
+                <h3>Upload Audios here: </h3>
+                <input type="file" accept="audio/*" multiple on-change="_uploadAudioFiles" />
+            </div>
+
+            <div class="media-container">
+                <h3>Videos</h3>
+                <template is="dom-repeat" items="{{videos}}">
+                    <video
+                        controls
+                        on-play="_handleMediaPlay"
+                        src="{{item}}"
+                        preload="metadata"
+                    ></video>
+                </template>
+            </div>
+
+            <div class="media-container">
+                <h3>Audios</h3>
+                <template is="dom-repeat" items="{{audios}}">
+                    <audio
+                        controls
+                        on-play="_handleMediaPlay"
+                        src="{{item}}"
+                        preload="metadata"
+                    ></audio>
+                </template>
+            </div>
         </div>
     </template>
 
     <script>
         Polymer({
             is: 'my-view13',
+
+            properties: {
+                videos: {
+                    type: Array,
+                    value: () => [],
+                },
+                audios: {
+                    type: Array,
+                    value: () => [],
+                },
+                playingMedia: {
+                    type: Object,
+                    value: null,
+                },
+            },
+
+            _uploadVideoFiles(event) {
+                const files = event.target.files;
+                Array.from(files).forEach((file) => {
+                    const url = URL.createObjectURL(file);
+                    this.push('videos', url);
+                });
+            },
+
+            _uploadAudioFiles(event) {
+                const files = event.target.files;
+                Array.from(files).forEach((file) => {
+                    const url = URL.createObjectURL(file);
+                    this.push('audios', url);
+                });
+            },
+
+            _handleMediaPlay(event) {
+                // Pause any currently playing media
+                if (this.playingMedia && this.playingMedia !== event.target) {
+                    this.playingMedia.pause();
+                }
+
+                // Start the new media
+                this.playingMedia = event.target;
+
+                // Pause other media types if playing
+                const allMedia = Array.from(this.root.querySelectorAll('video, audio'));
+                allMedia.forEach((media) => {
+                    if (media !== event.target && !media.paused) {
+                        media.pause();
+                    }
+                });
+            },
         });
     </script>
 </dom-module>

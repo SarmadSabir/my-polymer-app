@@ -154,12 +154,12 @@
           type: Array,
           value: () => Array.from({length: 20}, (_, i) => ({delay: i * 0.1})),
         },
-        // timer for the audio 
+        // timer for the audio
         timer: {
           type: Number,
           value: 0,
         },
-        // interval for the timer 
+        // interval for the timer
         formattedTime: {
           type: String,
           computed: '_formatTime(timer)',
@@ -170,7 +170,7 @@
         },
       },
 
-      // when ready => call the constructor 
+      // when ready => call the constructor
       ready: function() {
         this._initRecorder();
       },
@@ -213,7 +213,7 @@
         if (this.mediaRecorder) {
           this.mediaRecorder.stop();
           this.mediaRecorder.onstop = () => {
-            const blob = new Blob(this.audioChunks, { type: 'audio/wav' });
+            const blob = new Blob(this.audioChunks, {type: 'audio/wav'});
             this.recordedBlob = blob;
             this.audioUrl = URL.createObjectURL(blob);
             this.isRecording = false;
@@ -230,7 +230,7 @@
 
             // run the custom event
             this.dispatchEvent(new CustomEvent('audio-created', {
-              detail: { audio: this.audioObject },
+              detail: {audio: this.audioObject},
               bubbles: true,
               composed: true,
             }));
@@ -241,6 +241,7 @@
       // discard recording when trash button is clicked
       _discardRecording: function() {
         // show confirmation dialog
+        // eslint-disable-next-line max-len
         const confirmation = window.confirm('Are you sure you want to delete the recording?');
         if (confirmation) {
           this.recordedBlob = null;
@@ -309,14 +310,14 @@
 
         // dispatch custom event to notify the parent
         this.dispatchEvent(new CustomEvent('audio-created', {
-          detail: { audio },
+          detail: {audio},
           bubbles: true,
           composed: true, // shadow dom boundaries
         }));
       },
       // simulate recording 
       simulateRecordingComplete() {
-        const mockAudio = { duration: 60, format: 'mp3', size: '1MB' }; 
+        const mockAudio = {duration: 60, format: 'mp3', size: '1MB'};
         this._onRecordingComplete(mockAudio);
       },
     });
