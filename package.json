@@ -13,6 +13,7 @@
     "test:integration": "polymer build # test that psk builds without error with the CLI"
   },
   "dependencies": {
+    "bootstrap": "^5.3.3",
     "recorder-js": "^1.0.7"
   }
 }

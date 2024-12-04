@@ -6,7 +6,7 @@
             :host {
                 display: block;
                 height: 100%;
-                color: white; /* Light text */
+                color: white;
                 font-family: Arial, sans-serif;
             }
 
@@ -29,6 +29,8 @@
                 margin: 15px 0;
                 display: flex;
                 justify-content: center;
+                align-items: center;
+                flex-direction: column;
             }
 
             input[type="file"] {
@@ -43,28 +45,37 @@
                 transition: all 0.3s ease;
             }
 
-            input[type="file"]::-webkit-file-upload-button {
-                background-color: #0a78b8;
-                border: none;
+            .accordion {
+                margin-top: 20px;
+                border: 1px solid #0a78b8;
+                border-radius: 10px;
+                overflow: hidden;
+            }
+
+            .accordion-item {
+                background-color: #2f303a;
                 color: white;
-                padding: 8px 16px;
-                border-radius: 5px;
-                font-size: 14px;
-                font-weight: bold;
                 cursor: pointer;
-                transition: all 0.3s ease;
+                padding: 10px 15px;
+                border-bottom: 1px solid #0a78b8;
+                font-size: 16px;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
             }
 
-            input[type="file"]::-webkit-file-upload-button:hover {
-                background-color: #084f78;
+            .accordion-item:hover {
+                background-color: #3e404a;
             }
 
-            .media-container {
-                margin: 20px 0;
-                text-align: center;
+            .accordion-content {
+                display: none;
+                padding: 10px 15px;
+                background-color: #3e404a;
+                border-top: 1px solid #0a78b8;
             }
 
-            video {
+            .accordion-content video,
+            .accordion-content audio {
                 display: block;
                 margin: 10px auto;
                 max-width: 100%;
@@ -74,11 +85,8 @@
                 box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
             }
 
-            video:focus,
-            audio:focus {
-                outline: none;
-                border-color: #084f78;
-                box-shadow: 0 0 10px rgba(10, 120, 184, 0.7);
+            .accordion-content[open] {
+                display: block;
             }
         </style>
 
@@ -86,36 +94,42 @@
             <h1>One Time Player</h1>
 
             <div class="file-input">
-                <h3>Upload Videos here: </h3>
+                <h3>Upload Videos here:</h3>
                 <input type="file" accept="video/*" multiple on-change="_uploadVideoFiles" />
             </div>
 
             <div class="file-input">
-                <h3>Upload Audios here: </h3>
+                <h3>Upload Audios here:</h3>
                 <input type="file" accept="audio/*" multiple on-change="_uploadAudioFiles" />
             </div>
 
-            <div class="media-container">
-                <h3>Videos</h3>
-                <template is="dom-repeat" items="{{videos}}">
-                    <video
-                        controls
-                        on-play="_handleMediaPlay"
-                        src="{{item}}"
-                        preload="metadata"
-                    ></video>
+            <div class="accordion">
+                <template is="dom-repeat" items="{{videos}}" as="video">
+                    <div class="accordion-item" on-click="_toggleAccordion">
+                        Video
+                    </div>
+                    <div class="accordion-content">
+                        <video
+                            controls
+                            on-play="_handleMediaPlay"
+                            src="{{video}}"
+                            preload="metadata"
+                        ></video>
+                    </div>
                 </template>
-            </div>
 
-            <div class="media-container">
-                <h3>Audios</h3>
-                <template is="dom-repeat" items="{{audios}}">
-                    <audio
-                        controls
-                        on-play="_handleMediaPlay"
-                        src="{{item}}"
-                        preload="metadata"
-                    ></audio>
+                <template is="dom-repeat" items="{{audios}}" as="audio">
+                    <div class="accordion-item" on-click="_toggleAccordion">
+                        Audio
+                    </div>
+                    <div class="accordion-content">
+                        <audio
+                            controls
+                            on-play="_handleMediaPlay"
+                            src="{{audio}}"
+                            preload="metadata"
+                        ></audio>
+                    </div>
                 </template>
             </div>
         </div>
@@ -157,21 +171,32 @@
             },
 
             _handleMediaPlay(event) {
-                // Pause any currently playing media
+                // pause any currently playing media
                 if (this.playingMedia && this.playingMedia !== event.target) {
                     this.playingMedia.pause();
                 }
 
-                // Start the new media
+                // start the new media
                 this.playingMedia = event.target;
+            },
 
-                // Pause other media types if playing
-                const allMedia = Array.from(this.root.querySelectorAll('video, audio'));
-                allMedia.forEach((media) => {
-                    if (media !== event.target && !media.paused) {
-                        media.pause();
+            _toggleAccordion(event) {
+                const content = event.target.nextElementSibling;
+
+                // close all open accordions
+                const allContents = this.root.querySelectorAll('.accordion-content');
+                allContents.forEach((item) => {
+                    if (item !== content) {
+                        item.removeAttribute('open');
                     }
                 });
+
+                // toggle the clicked accordion
+                if (content.hasAttribute('open')) {
+                    content.removeAttribute('open');
+                } else {
+                    content.setAttribute('open', '');
+                }
             },
         });
     </script>
