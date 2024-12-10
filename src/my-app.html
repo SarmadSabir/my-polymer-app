@@ -20,6 +20,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
 <link rel="import" href="my-icons.html">
 
 <link rel="lazy-import" href="my-view1.html">
@@ -35,6 +36,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="lazy-import" href="my-view11.html">
 <link rel="lazy-import" href="my-view12.html">
 <link rel="lazy-import" href="my-view13.html">
+<link rel="lazy-import" href="my-view14.html">
+<link rel="lazy-import" href="my-view15.html">
+<link rel="lazy-import" href="my-view16.html">
+<link rel="lazy-import" href="my-view17.html">
+<link rel="lazy-import" href="my-view18.html">
 <link rel="lazy-import" href="image-viewer.html">
 <link rel="lazy-import" href="my-view404.html">
 
@@ -129,18 +135,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <app-toolbar>Menu</app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
           <a name="view10" href="[[rootPath]]view10">Latest News</a>
-          <a name="view1" href="[[rootPath]]view1">View One</a>
+          <!-- <a name="view1" href="[[rootPath]]view1">View One</a>
           <a name="view2" href="[[rootPath]]view2">View Two</a>
           <a name="view3" href="[[rootPath]]view3">View Three</a>
-          <a name="view4" href="[[rootPath]]view4">Aesthetic</a>
+          <a name="view4" href="[[rootPath]]view4">Aesthetic</a> -->
           <!-- <a name="view5" href="[[rootPath]]view5">11/19/2024</a> -->
           <a name="view6" href="[[rootPath]]view6">Relationship</a>
           <a name="view7" href="[[rootPath]]view7">Elements</a>
-          <a name="view8" href="[[rootPath]]view8">Condition 1</a>
+          <!-- <a name="view8" href="[[rootPath]]view8">Condition 1</a> -->
           <a name="view9" href="[[rootPath]]view9">Condition 2</a>
           <a name="view11" href="[[rootPath]]view11">Post</a>
           <a name="view12" href="[[rootPath]]view12">Audio Recorder</a>
           <a name="view13" href="[[rootPath]]view13">One Time Play</a>
+          <a name="view14" href="[[rootPath]]view14">Bootstrap</a>
+          <!-- <a name="view15" href="[[rootPath]]view15">View 15</a>
+          <a name="view16" href="[[rootPath]]view16">View 16</a> -->
+          <a name="view17" href="[[rootPath]]view17">Accordian</a>
+          <!-- <a name="view18" href="[[rootPath]]view18">Files for Accordian</a> -->
           <a name="image-viewer" href="[[rootPath]]image-viewer">Image Viewer</a>
         </iron-selector>
       </app-drawer>
@@ -185,6 +196,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <my-view11 name="view11"></my-view11>
           <my-view12 name="view12"></my-view12>
           <my-view13 name="view13"></my-view13>
+          <my-view14 name="view14"></my-view14>
+          <!-- <my-view15 name="view15"></my-view15>
+          <my-view16 name="view16"></my-view16> -->
+          <my-view17 name="view17"></my-view17>
+          <!-- <my-view18 name="view18"></my-view18> -->
           <image-viewer name="image-viewer"></image-viewer>
           <my-view404 name="view404"></my-view404>
         </iron-pages>
@@ -249,4 +265,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
     });
   </script>
+
+  <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 </dom-module>

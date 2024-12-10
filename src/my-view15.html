@@ -1,0 +1,179 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="my-view15">
+  <template>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style>
+      :host {
+        display: block;
+        height: 100%;
+        color: white;
+        font-family: Arial, sans-serif;
+        background-color: #2f303a;
+        padding: 20px;
+      }
+
+      h1 {
+        color: #0a78b8;
+        text-align: center;
+      }
+
+      input[type="file"] {
+        margin: 15px 0;
+        padding: 10px;
+        border: 1px solid #0a78b8;
+        border-radius: 10px;
+        background-color: #2f303a;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        outline: none;
+        transition: all 0.3s ease;
+      }
+
+      input[type="file"]:hover {
+        background-color: #3e404a;
+      }
+    </style>
+
+    <div class="container">
+      <h1>One Time Player</h1>
+
+      <div class="file-input">
+        <h3>Upload Videos here:</h3>
+        <input type="file" accept="video/*" multiple on-change="_uploadVideoFiles" />
+      </div>
+
+      <div class="file-input">
+        <h3>Upload Audios here:</h3>
+        <input type="file" accept="audio/*" multiple on-change="_uploadAudioFiles" />
+      </div>
+
+      <!-- Bootstrap Accordion -->
+      <div id="mediaAccordion" class="accordion mt-4">
+        <!-- Video Section -->
+        <template is="dom-repeat" items="{{videos}}" as="video">
+          <div class="card">
+            <div class="card-header" id$="headingVideo{{index}}">
+              <h5 class="mb-0">
+                <button
+                  class="btn btn-primary text-decoration-none text-light"
+                  type="button"
+                  data-toggle="collapse"
+                  data-target$="#collapseVideo{{index}}"
+                  aria-expanded="false"
+                  aria-controls$="collapseVideo{{index}}"
+                >
+                  Video {{index + 1}}
+                </button>
+              </h5>
+            </div>
+            <div
+              id$="collapseVideo{{index}}"
+              class="collapse"
+              aria-labelledby$="headingVideo{{index}}"
+              data-parent="#mediaAccordion"
+            >
+              <div class="card-body bg-dark">
+                <video
+                  controls
+                  on-play="_handleMediaPlay"
+                  src="{{video}}"
+                  preload="metadata"
+                  class="w-100"
+                ></video>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- Audio Section -->
+        <template is="dom-repeat" items="{{audios}}" as="audio">
+          <div class="card">
+            <div class="card-header" id$="headingAudio{{index}}">
+              <h5 class="mb-0">
+                <button
+                  class="btn btn-secondary text-decoration-none text-light"
+                  type="button"
+                  data-toggle="collapse"
+                  data-target$="#collapseAudio{{index}}"
+                  aria-expanded="false"
+                  aria-controls$="collapseAudio{{index}}"
+                >
+                  Audio {{index + 1}}
+                </button>
+              </h5>
+            </div>
+            <div
+              id$="collapseAudio{{index}}"
+              class="collapse"
+              aria-labelledby$="headingAudio{{index}}"
+              data-parent="#mediaAccordion"
+            >
+              <div class="card-body bg-dark">
+                <audio
+                  controls
+                  on-play="_handleMediaPlay"
+                  src="{{audio}}"
+                  preload="metadata"
+                  class="w-100"
+                ></audio>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'my-view15',
+
+      properties: {
+        videos: {
+          type: Array,
+          value: () => [],
+        },
+        audios: {
+          type: Array,
+          value: () => [],
+        },
+        playingMedia: {
+          type: Object,
+          value: null,
+        },
+      },
+
+      ready() {
+        // Force Polymer to use Shady DOM for better compatibility with Bootstrap
+        this.useShadyDOM = true;
+      },
+
+      _uploadVideoFiles(event) {
+        const files = event.target.files;
+        Array.from(files).forEach((file) => {
+          const url = URL.createObjectURL(file);
+          this.push('videos', url);
+        });
+      },
+
+      _uploadAudioFiles(event) {
+        const files = event.target.files;
+        Array.from(files).forEach((file) => {
+          const url = URL.createObjectURL(file);
+          this.push('audios', url);
+        });
+      },
+
+      _handleMediaPlay(event) {
+        // Pause any currently playing media
+        if (this.playingMedia && this.playingMedia !== event.target) {
+          this.playingMedia.pause();
+        }
+        this.playingMedia = event.target;
+      },
+    });
+  </script>  
+</dom-module>

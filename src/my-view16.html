@@ -1,0 +1,87 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="my-view16">
+  <template>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+
+    <style>
+      :host {
+        display: block;
+        padding: 16px;
+        background-color: #f8f9fa;
+        font-family: Arial, sans-serif;
+      }
+    </style>
+
+    <div id="accordion" class="accordion accordion-flush">
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+            Accordion Item #1
+          </button>
+        </h2>
+        <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordion">
+          <div class="accordion-body">
+            Placeholder content for this accordion. This is the first item's body.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+            Accordion Item #2
+          </button>
+        </h2>
+        <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordion">
+          <div class="accordion-body">
+            Placeholder content for the second item's body.
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+            Accordion Item #3
+          </button>
+        </h2>
+        <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordion">
+          <div class="accordion-body">
+            Placeholder content for the third item's body.
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'my-view16',
+
+      ready: function() {
+        // making sure bootstrap's js works within the shadow DOM
+        const bootstrap = window.bootstrap || undefined;
+
+        if (bootstrap) {
+          const accordion = this.shadowRoot.querySelector('#accordion');
+          const buttons = accordion.querySelectorAll('[data-bs-toggle="collapse"]');
+
+          buttons.forEach((button) => {
+            button.addEventListener('click', () => {
+              const targetSelector = button.getAttribute('data-bs-target');
+              const target = this.shadowRoot.querySelector(targetSelector);
+              if (target) {
+                // bootstrap collapse API to toggle visibility
+                const collapseInstance = bootstrap.Collapse.getInstance(target) 
+                || new bootstrap.Collapse(target);
+                collapseInstance.toggle();
+              }
+            });
+          });
+        } else {
+          console.error('Bootstrap JavaScript library is not loaded.');
+        }
+      },
+    });
+  </script>
+</dom-module>

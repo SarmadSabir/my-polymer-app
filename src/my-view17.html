@@ -1,0 +1,164 @@
+<link rel="import" href="../bower_components//polymer/polymer.html">
+<link rel="import" href="../src/my-view18.html">
+
+<dom-module id="my-view17">
+  <template>
+    <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+
+    <style>
+      :host {
+        display: block;
+        padding: 16px;
+        background-color: #f8f9fa;
+        font-family: Arial, sans-serif;
+      }
+      .accordion-body video {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+      }
+    </style>
+
+    <div>
+      <my-view18 name="view18" on-files-uploaded="handleFilesUploaded"></my-view18>
+      <div id="accordion" class="accordion accordion-flush">
+        <!-- accordion items will come here... -->
+      </div>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'my-view17',
+
+      properties: {
+        playingMedia: {
+          type: Object,
+          value: null,
+        },
+      },
+
+      ready: function() {
+        const bootstrap = window.bootstrap || undefined;
+
+        if (bootstrap) {
+          this._initializeAccordion();
+        } else {
+          console.error('Bootstrap JavaScript library is not loaded.');
+        }
+
+        // listen for the event to clear from my-view18
+        this.addEventListener('clear-accordion', this.clearAccordion.bind(this));
+      },
+
+      handleFilesUploaded: function(event) {
+        const files = event.detail.files; // getting the list of files 
+        const accordion = this.shadowRoot.querySelector('#accordion'); // find accordion
+
+        // loop through the files and create a div for each
+        files.forEach((file, index) => {
+          const fileItem = document.createElement('div');
+          fileItem.classList.add('accordion-item');
+
+          const fileType = file.type.startsWith('audio') ? 'Audio' : file.type.startsWith('video') ? 'Video' : 'File';
+          const uniqueIndex = accordion.children.length; // ensure unique index
+          const accordionId = `flush-collapse-${uniqueIndex}`;
+
+          // creating html content for the accordion
+          fileItem.innerHTML = `
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" 
+              data-bs-toggle="collapse" data-bs-target="#${accordionId}" 
+              aria-expanded="false" aria-controls="${accordionId}">
+                <b>${fileType}:</b> ${file.name}
+              </button>
+            </h2>
+            <div id="${accordionId}" class="accordion-collapse collapse" 
+            data-bs-parent="#accordion">
+              <div class="accordion-body">
+                ${this.getFileContent(file)}
+              </div>
+            </div>
+          `;
+
+          accordion.appendChild(fileItem);
+
+          // add event listener to play media when clicked
+          const mediaElement = fileItem.querySelector('audio, video');
+          if (mediaElement) {
+            mediaElement.addEventListener('play', this._handleMediaPlay.bind(this));
+          }
+        });
+
+        // initialize accordion when files are uploaded
+        this._initializeAccordion();
+      },
+
+      // clear accodian when needed 
+      clearAccordion: function() {
+        const accordion = this.shadowRoot.querySelector('#accordion');
+        accordion.innerHTML = '';
+      },
+
+      // helper function for accordion toggle 
+      _initializeAccordion: function() {
+        const bootstrap = window.bootstrap || undefined;
+
+        if (!bootstrap) {
+          console.error('Bootstrap JavaScript library is not loaded.');
+          return;
+        }
+
+        const accordion = this.shadowRoot.querySelector('#accordion');
+        const buttons = accordion.querySelectorAll('[data-bs-toggle="collapse"]');
+
+        buttons.forEach((button) => {
+          button.addEventListener('click', () => {
+            const targetSelector = button.getAttribute('data-bs-target');
+            const target = this.shadowRoot.querySelector(targetSelector);
+            if (target) {
+              const collapseInstance =
+                bootstrap.Collapse.getInstance(target)
+                || new bootstrap.Collapse(target);
+              collapseInstance.toggle();
+            }
+          });
+        });
+      },
+
+      // helper function to create content based on file type like audio has download button
+      getFileContent: function(file) {
+        const fileUrl = URL.createObjectURL(file);
+
+        if (file.type.startsWith('audio')) {
+          return `
+            <audio controls>
+              <source src="${fileUrl}" type="${file.type}">
+              Your browser does not support the audio element.
+            </audio>
+            <br>
+            <a href="${fileUrl}" download="${file.name}" class="btn btn-primary mt-2">
+              Download Audio
+            </a>`;
+        } else if (file.type.startsWith('video')) {
+          return `
+            <video controls>
+              <source src="${fileUrl}" type="${file.type}">
+              Your browser does not support the video element.
+            </video>`;
+        } else {
+          return `<p>Unsupported file type</p>`;
+        }
+      },
+
+      // function to manage single media playing while the rest are paused 
+      _handleMediaPlay: function(event) {
+        if (this.playingMedia && this.playingMedia !== event.target) {
+          this.playingMedia.pause();
+        }
+        this.playingMedia = event.target;
+      },
+    });
+  </script>
+</dom-module>

@@ -11,13 +11,21 @@
     "src/my-view7.html",
     "src/my-view8.html",
     "src/my-view9.html",
-    "src/my-view10.html",
+    "src/my-view11.html",
+    "src/my-view12.html",
+    "src/my-view13.html",
+    "src/my-view14.html",
+    "src/my-view15.html",
+    "src/my-view16.html",
+    "src/my-view17.html",
+    "src/my-view18.html",
     "src/child-component.html",
     "src/my-view404.html"
   ],
   "sources": [
     "images/**/*",
-    "src/**/*"
+    "src/**/*",
+    "node_modules/**/*"
   ],
   "extraDependencies": [
     "bower_components/webcomponentsjs/*.js",

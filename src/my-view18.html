@@ -1,0 +1,55 @@
+<link rel="import" href="../bower_components//polymer/polymer.html">
+
+<dom-module id="my-view18">
+    <template>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+      <style>
+        :host {
+          display: block;
+          padding: 16px;
+        }
+  
+        .upload-section {
+          margin: 20px 0;
+        }
+      </style>
+  
+      <div>
+        <h3>File Handling</h3>
+        <div class="upload-section">
+          <input type="file" id="fileInput" accept="audio/*,video/*" multiple>
+          <button class="btn btn-primary" on-click="uploadFiles">Upload</button>
+          <button class="btn btn-danger" on-click="clearAllFiles">Clear All</button>
+        </div>
+      </div>  
+    </template>
+  
+    <script>
+      Polymer({
+        is: 'my-view18',
+
+        uploadFiles: function() {
+          const input = this.$.fileInput;
+          const files = Array.from(input.files);
+
+          if (files.length > 0) {
+            const event = new CustomEvent('files-uploaded', {
+              detail: { files: files },
+              bubbles: true,
+              composed: true,
+            });
+            this.dispatchEvent(event);
+            input.value = '';
+          }
+        },
+
+        clearAllFiles: function() {
+          const event = new CustomEvent('clear-accordion', {
+            bubbles: true,
+            composed: true,
+          });
+          this.dispatchEvent(event);
+        },
+      });
+    </script>
+  </dom-module>
