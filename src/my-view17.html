@@ -1,4 +1,3 @@
-<link rel="import" href="../bower_components//polymer/polymer.html">
 <link rel="import" href="../src/my-view18.html">
 
 <dom-module id="my-view17">
@@ -53,7 +52,7 @@
       },
 
       handleFilesUploaded: function(event) {
-        const files = event.detail.files; // getting the list of files 
+        const files = event.detail.files; // getting the list of files
         const accordion = this.shadowRoot.querySelector('#accordion'); // find accordion
 
         // loop through the files and create a div for each
@@ -101,7 +100,7 @@
         accordion.innerHTML = '';
       },
 
-      // helper function for accordion toggle 
+      // helper function for accordion toggle
       _initializeAccordion: function() {
         const bootstrap = window.bootstrap || undefined;
 

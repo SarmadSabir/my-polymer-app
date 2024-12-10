@@ -1,9 +1,7 @@
-<link rel="import" href="../bower_components/polymer/polymer.html">
-
 <dom-module id="my-view16">
   <template>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
     <style>
       :host {
@@ -72,7 +70,7 @@
               const target = this.shadowRoot.querySelector(targetSelector);
               if (target) {
                 // bootstrap collapse API to toggle visibility
-                const collapseInstance = bootstrap.Collapse.getInstance(target) 
+                const collapseInstance = bootstrap.Collapse.getInstance(target)
                 || new bootstrap.Collapse(target);
                 collapseInstance.toggle();
               }

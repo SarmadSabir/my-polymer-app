@@ -1,5 +1,3 @@
-<link rel="import" href="../bower_components//polymer/polymer.html">
-
 <dom-module id="my-view18">
     <template>
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -34,7 +32,7 @@
 
           if (files.length > 0) {
             const event = new CustomEvent('files-uploaded', {
-              detail: { files: files },
+              detail: {files: files},
               bubbles: true,
               composed: true,
             });
