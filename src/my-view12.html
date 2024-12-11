@@ -114,7 +114,7 @@
       <div class="visualization" hidden$="[[!isRecording]]">
         <!-- Animation bar that will appear when recording is started... -->
         <template is="dom-repeat" items="{{bars}}">
-          <div class="bar" hidden$="[[!isRecording]]" style="animation-delay: [[item.delay]]s;"></div>
+          <div class="bar" hidden$="[[!isRecording]]" style$="animation-delay: [[item.delay]];"></div>
         </template>
       </div>
       <div class="timer" hidden$="[[!isRecording]]">[[formattedTime]]</div>

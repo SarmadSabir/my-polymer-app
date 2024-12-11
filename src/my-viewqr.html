@@ -1,0 +1,108 @@
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+<dom-module id="my-viewqr">
+    <template>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <style>
+            :host {
+            display: block;
+            padding: 10px;
+            }
+            .qr-logo {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 50px;
+                height: 50px;
+                border: 3px solid white;
+                background: white;
+                padding: 5px;
+            }
+            .qr-container {
+                position: relative;
+                width: 200px;
+                height: 200px;
+                margin: auto;
+                background: linear-gradient(135deg, #6e3eff, #009ffd);
+                border-radius: 10px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            }
+            canvas {
+                width: 100%;
+                height: 100%;
+                border-radius: 10px;
+            }
+            .info-section {
+                text-align: center;
+                margin-top: 20px;
+            }
+            .info-section h2 {
+                font-size: 24px;
+                margin-bottom: 10px;
+                color: #333;
+            }
+            .info-section p {
+                font-size: 16px;
+                color: #555;
+            }
+        </style>
+        <div class="main-container container mt-4 p-4 border rounded shadow">
+            <div class="row">
+                <div class="col-md-4 d-flex justify-content-center align-items-center">
+                    <div class="qr-container">
+                        <canvas id="qrcode"></canvas>
+                        <img class="qr-logo" src="[[logoSrc]]" alt="Digital Log">
+                    </div>
+                </div>
+                <div class="col-md-8 d-flex flex-column justify-content-center">
+                    <div class="info-section">
+                        <h2>QR Code Information</h2>
+                        <p>Hope you're having a wonderful day.</strong></p>
+                        <p>Scan the QR code to visit: <strong style="color:red;">Google!</strong></p>
+                        <!-- <p><strong><a href="[[url]]" target="_blank">[[url]]</a></strong></p> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+  
+    <script>
+      Polymer({
+        is: 'my-viewqr',
+
+        properties: {
+            url: {
+                type: String,
+                value: 'https://www.google.com',
+            },
+            logoSrc: {
+                type: String,
+                value: 'https://via.placeholder.com/150',
+            },
+        },
+
+        ready: function() {
+            this._generateQRCode();
+        },
+
+        _generateQRCode: function() {
+            const canvas = this.$.qrcode;
+            const qrCodeOptions = {
+                errorCorrectionLevel: 'H',
+                width: 200,
+                height: 200,
+            };
+            // eslint-disable-next-line no-undef
+            QRCode.toCanvas(canvas, this.url, qrCodeOptions, (error) => {
+                if (error) {
+                    console.error('Error generating QR Code: ', error);
+                }
+            });
+        },
+      });
+    </script>
+  </dom-module>

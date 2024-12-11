@@ -165,7 +165,8 @@
             },
 
             // methods that are automatically invoked by Polymer
-            handleButtonClick: function() {
+            handleButtonClick: function(e) {
+                e.preventDefault();
                 this.outputMessage = 'Button clicked!';
                 this.launchConfetti();
             },

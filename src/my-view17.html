@@ -53,13 +53,14 @@
 
       handleFilesUploaded: function(event) {
         const files = event.detail.files; // getting the list of files
-        const accordion = this.shadowRoot.querySelector('#accordion'); // find accordion
+        const accordion = this.shadowRoot.querySelector('#accordion');
 
         // loop through the files and create a div for each
         files.forEach((file, index) => {
           const fileItem = document.createElement('div');
           fileItem.classList.add('accordion-item');
 
+          // eslint-disable-next-line max-len
           const fileType = file.type.startsWith('audio') ? 'Audio' : file.type.startsWith('video') ? 'Video' : 'File';
           const uniqueIndex = accordion.children.length; // ensure unique index
           const accordionId = `flush-collapse-${uniqueIndex}`;
@@ -94,7 +95,7 @@
         this._initializeAccordion();
       },
 
-      // clear accodian when needed 
+      // clear accodian when needed
       clearAccordion: function() {
         const accordion = this.shadowRoot.querySelector('#accordion');
         accordion.innerHTML = '';
@@ -126,6 +127,7 @@
         });
       },
 
+      // eslint-disable-next-line max-len
       // helper function to create content based on file type like audio has download button
       getFileContent: function(file) {
         const fileUrl = URL.createObjectURL(file);
@@ -137,7 +139,8 @@
               Your browser does not support the audio element.
             </audio>
             <br>
-            <a href="${fileUrl}" download="${file.name}" class="btn btn-primary mt-2">
+            <a href="${fileUrl}" download="${file.name}"
+            class="btn btn-primary mt-2">
               Download Audio
             </a>`;
         } else if (file.type.startsWith('video')) {
@@ -151,7 +154,7 @@
         }
       },
 
-      // function to manage single media playing while the rest are paused 
+      // function to manage single media playing while the rest are paused
       _handleMediaPlay: function(event) {
         if (this.playingMedia && this.playingMedia !== event.target) {
           this.playingMedia.pause();
